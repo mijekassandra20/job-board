@@ -4,15 +4,13 @@ const RecruiterJob = require('../models/RecruiterJob')
 const getJobs = async(req, res, next) => {
 
     try {
-        // const jobs = await RecruiterJob.find()
-
-        const jobs = await RecruiterJob.find(jobPosting)
-        console.log(jobs)
+        const recruiter = await RecruiterJob.findById(req.params.recruiterId)
+        const result = recruiter.jobPosting; // access the jobPosting inside the Recruiters
 
         res
         .status(200)
         .setHeader('Content-Type', 'application/json')
-        .json(jobs)
+        .json(result)
         
     } catch (err) {
         throw new Error(`Error retrieving jobs: ${err.message}`)
