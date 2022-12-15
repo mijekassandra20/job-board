@@ -49,6 +49,11 @@ const JobSchema = new Schema ({
     isAvailable: {
         type: Boolean,
         default: true
+    },
+    
+    date: {
+        type: Date,
+        default: Date.now
     }
 })
 
@@ -144,4 +149,3 @@ RecruiterSchema.methods.getResetPasswordToken = function() {
 }
 
 module.exports = mongoose.model('Recruiter', RecruiterSchema)
-// module.exports = mongoose.model('Job', JobSchema)

@@ -67,18 +67,18 @@ const jobValidator = (req, res, next) => {
 }
 
 const adminValidator = (req, res, next) => {
-    // check if admin value is true from req.user
 
-    if (req.user.admin) {
+    // check if admin value is true from req.user
+    if(req.user.admin) {
         next()
     } else {
         res
         .status(403)
         .setHeader('Content-Type', 'application/json')
-        .json({ success: false, msg: 'Unauthorized to access this resource!!'})
+        .json({ success: false, msg:"Unauthorized to access this resource"})
     }
-}
 
+}
 
 module.exports = {
     userValidator,
