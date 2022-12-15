@@ -1,6 +1,8 @@
 // const Job = require('../models/Job');
 const RecruiterJob = require('../models/RecruiterJob')
 
+// This is a test
+
 // GET ALL JOBS 
 const getJobs = async(req, res, next) => {
 
