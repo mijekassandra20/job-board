@@ -17,6 +17,7 @@ const hpp = require('hpp');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 
+// TEST!
 
 //To read our config values
 dotenv.config({path: './config/config.env'})
