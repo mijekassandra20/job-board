@@ -1,4 +1,4 @@
-const Job = require('../models/Job');
+// const Job = require('../models/Job');
 const Recruiter = require('../models/Recruiter')
 
 // This is a test
@@ -8,31 +8,33 @@ const getJobs = async(req, res, next) => {
 
     try {
 
-        const job = await Job.find(); 
+        const recruiters = await Recruiter.find(); 
+
+        const jobs = recruiters.map(recruiter => recruiter.jobPosting).flat()
+
 
         res
         .status(200)
         .setHeader('Content-Type', 'application/json')
-        .json(job)
+        .json(jobs)
         
     } catch (err) {
-        throw new Error(`Error retrieving all jobs: ${err.message}`)
+        throw new Error(`Error retrieving jobs: ${err.message}`)
     }
 }
 
-//  POST A JOB
 const postJob = async (req, res, next) => {
 
     try {
-
         const recruiter = await Recruiter.findById(req.params.recruiterId)
+        recruiter.jobPosting.push(req.body)
 
-        const job = await Job.create(req.body)
+        const result = await recruiter.save()
 
         res
         .status(201)
         .setHeader('Content-Type', 'application/json')
-        .json(job)
+        .json(result)
         
     } catch (err) {
         throw new Error(`Error posting new job: ${err.message}`)
@@ -67,13 +69,14 @@ const postJob = async (req, res, next) => {
 // GET ALL JOBS UNDER A RECRUITER
 const getRecruiterJobs = async (req, res, next) => {
     try {
-        const recruiter = await Recruiter.findById(req.params.recruiterId);
-        const getJobs = await Job.find({ postedBy: recruiter})
+        const jobs = await Recruiter.findById(req.params.recruiterId)
+
+        const jobPosted = jobs.jobPosting
 
         res
         .status(200)
         .setHeader('Content-Type', 'application/json')
-        .json(getJobs)
+        .json(jobPosted)
 
         
     } catch (err) {
@@ -86,12 +89,18 @@ const getRecruiterJobs = async (req, res, next) => {
 const getJob = async (req, res, next) => {
 
     try {
-        const job = await Job.findById(req.params.jobId)
+
+        const job = await Recruiter.findById(req.params.recruiterId);
+
+        let jobPosted = job.jobPosting.find(jobPosted => (jobPosted._id).equals(req.params.jobId)) 
+
+        if (!jobPosted) jobPosted = { success: false, msg: `No job found with job ID: ${req.params.jobId}`}
 
         res
         .status(200)
         .setHeader('Content-Type', 'application/json')
-        .json(job)
+        .json(jobPosted)
+
 
     } catch (err){
         throw new Error(`Error retrieving a job with ID: ${req.params.jobId}: ${err.message}`)
@@ -102,14 +111,26 @@ const getJob = async (req, res, next) => {
 const updateJob = async (req, res, next) => {
 
     try {
-        
-        const job = await Job.findByIdAndUpdate(req.params.jobId,
-            {$set: req.body}, {new: true})
+        const job = await Recruiter.findById(req.params.recruiterId)
+
+        let jobPosted = job.jobPosting.find(jobPosted => (jobPosted._id).equals(req.params.jobId))
+
+        if(jobPosted){
+            const jobIndexPosition = job.jobPosting.indexOf(jobPosted)
+            job.jobPosting.splice(jobIndexPosition, 1, req.body)
+            jobPosted = job.jobPosting[jobIndexPosition]
+            await job.save()
+        } else {
+            jobPosted = {
+                success: false,
+                msg: `No job found with ID: ${req.params.jobId}`
+            }
+        }
 
         res
         .status(200)
         .setHeader('Content-Type', 'application/json')
-        .json(job)
+        .json(jobPosted)
 
     } catch (err) {
         throw new Error(`Error updating job with ID: ${req.params.jobId}: ${err.message}`)
@@ -121,24 +142,23 @@ const updateJob = async (req, res, next) => {
 const deleteJob = async (req, res, next) => {
 
     try {
+        const job = await Recruiter.findById(req.params.recruiterId)
 
-        const findJob = await Job.findById(req.params.jobId)
+        let jobPosted = job.jobPosting.find(jobPosted => (jobPosted._id).equals(req.params.jobId)); 
 
-        if (!findJob){
-            res
-            .status(404)
-            .setHeader('Content-Type', 'application/json')
-            .json({ success: false, msg: `Job with ID: $${req.params.jobId} does not exist!!`})
-            
+        if (jobPosted) {
+            const jobIndexPosition = job.jobPosting.indexOf(jobPosted)
+            job.jobPosting.splice(jobIndexPosition, 1)
+            jobPosted = {success: true, msg: `Successfully deleted job with ID: ${req.params.jobId}`}
+            await job.save()
         } else {
-            const job = await Job.findByIdAndDelete(req.params.jobId)
-
-            res
-            .status(200)
-            .setHeader('Content-Type', 'application/json')
-            .json({ success: true, msg: `Job with ID: $${req.params.jobId} was successfully deleted!!`})
+            jobPosted = { success: false, msg: `No job found with ID: ${req.params.jobId}`}
         }
-        
+
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json(jobPosted)
 
     } catch (err) {
         throw new Error(`Error deleting job with ID: ${req.params.jobId}: ${err.message}`)

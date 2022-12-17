@@ -252,42 +252,96 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 }
 
-// ------------------------------------------------------------------
+// ------------------------------------------ APPLY JOB
 
+// SEARCH ALL JOBS POSTED
 const searchJobs = async (req, res, next) => {
 
     try {
 
-    const postedJobs = await Job.find()
+        const jobs = await Job.find(); 
 
-    res
-    .status(200)
-    .setHeader('Content-Type', 'application/json')
-    .json(postedJobs)
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json(jobs)
         
+    } catch (err) {
+        throw new Error(`Error retrieving jobs: ${err.message}`)
+    }
+}
+
+// APPLY A JOB
+const applyJob = async (req, res, next) => {
+
+    try {
+
+        const applicant = await User.findById(req.params.userId);
+        const apply = await Job.findById(req.query.jobId)
+
+        applicant.appliedJobs.push(apply)
+
+        const result = await applicant.save()
+
+        res
+        .status(201)
+        .setHeader('Content-Type', 'application/json')
+        .json(result)
+
 
     } catch (err) {
-        throw new Error(`Error searching for a job ${err.message}`)
+       throw new Error(`Error applying a job: ${err.message}`) 
     }
 
 }
 
-// const applyJobs = async (req, res, next) => {
-//     try {
-//         const apply = await Job.findById(req.params.jobsId)
-//         apply.applicants.push(req.body)
+// GET ALL THE JOBS A USER APPLIED
+const getAppliedJobs = async (req, res, next) => {
 
-//         const result = await apply.save()
+    try {
 
-//         res
-//         .status(201)
-//         .setHeader('Content-Type', 'application/json')
-//         .json(result)
+        const applicant = await User.findById(req.params.userId)
+        const result = applicant.appliedJobs
         
-//     } catch (err) {
-//         throw new Error(`Error retrieving a job ${err.message}`)
-//     }
-// }
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json(result)
+        
+    } catch (err) {
+        throw new Error(`Error retrieving all the Jobs applied`)
+    }
+}
+
+// DELETE A JOB APPLICATION
+const deleteJobApplication = async (req, res, next) => {
+
+    try {
+        const applicant = await User.findById(req.params.userId)
+
+        let findJob = applicant.appliedJobs.find(findJob => (findJob._id).equals(req.query.jobId));
+
+        if(!findJob){
+            findJob = { success: false, msg: `No job application found with ID: ${req.query.jobId}`}
+
+        } else {
+            const jobIndexPosition = applicant.appliedJobs.indexOf(findJob)
+            applicant.appliedJobs.splice(jobIndexPosition, 1)
+            findJob = { success: true, msg: `Succesfully deleted job application with ID: ${req.query.jobId}`}
+
+            await applicant.save()
+        }
+
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json(findJob)
+
+
+    } catch (err) {
+        throw new Error(`Error deleting job applicaation: ${err.message}`)
+    }
+}
 
 
 module.exports = {
@@ -302,5 +356,8 @@ module.exports = {
     resetPassword,
     updatePassword,
     logout,
-    searchJobs
+    searchJobs,
+    applyJob,
+    getAppliedJobs,
+    deleteJobApplication
 }

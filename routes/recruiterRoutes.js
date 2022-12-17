@@ -26,7 +26,7 @@ const {
 
 // root
 router.route('/')
-    // .get(reqLogger, protectedRoute,  adminValidator, getRecruiters)
+    .get(reqLogger, getRecruiters)
     .post(reqLogger, recruiterValidator, postRecruiter)
     // .delete(reqLogger, protectedRoute, adminValidator, deleteRecruiters)
 

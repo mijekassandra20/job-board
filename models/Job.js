@@ -1,57 +1,66 @@
-// const mongoose = require('mongoose');
-// const Recruiter = require('./RecruiterJob')
+const mongoose = require('mongoose');
 
-// const Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-// const JobSchema = new Schema ({
-//     jobTitle: {
-//         type: String,
-//         required: [true, 'Please input a job title!!']
-//     },
+
+const JobSchema = new Schema ({
     
-//     jobDescription: {
-//         type: String,
-//         required: [true, 'Please input a job description!!']
-//     },
+    jobTitle: {
+        type: String,
+        required: [true, 'Please input a job title!!']
+    },
 
-//     requirements: {
-//         type: [String],
-//         require: [true, 'Please input the requirements!!']
-//     },
+    jobDescription: {
+        type: String,
+        required: [true, 'Please input a job description!!']
+    },
 
-//     location: {
-//         type: String,
-//         required: [true, 'Please input a job location!!']
-//     },
+    requirements: {
+        type: [String],
+        require: [true, 'Please input the requirements!!']
+    },
 
-//     salary: {
-//         type: Number,
-//         required: [true, 'Please input a salary!!'],
-//         validate: (salary) => {
-//             return typeof salary === 'number'
-//         }
-//     },
+    location: {
+        type: String,
+        required: [true, 'Please input a job location!!']
+    },
+
+    salary: {
+        type: Number,
+        required: [true, 'Please input a salary!!'],
+        validate: (salary) => {
+            return typeof salary === 'number'
+        }
+    },
     
-//     jobType: {
-//         type: String,
-//         required: [true, 'Please input the job type!!'],
-//         enum: [
-//             'Full-time',
-//             'Part-time',
-//             'Contractual',
-//             'Internship'
-//         ]
-//     },
+    jobType: {
+        type: String,
+        required: [true, 'Please input the job type!!'],
+        enum: [
+            'Full-time',
+            'Part-time',
+            'Contractual',
+            'Internship'
+        ]
+    },
 
-//     isAvailable: {
-//         type: Boolean,
-//         default: true
-//     },
-
-//     company: [RecruiterSchema]
+    isAvailable: {
+        type: Boolean,
+        default: true
+    },
     
-// }, {
-//     timestamps: true
-// })
+    date: {
+        type: Date,
+        default: Date.now
+    },
 
-// module.exports = mongoose.model('Job', JobSchema)
+    postedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'Recruiter',
+        required: true
+    }
+
+
+})
+
+module.exports = mongoose.model('Job', JobSchema)

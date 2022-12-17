@@ -1,5 +1,5 @@
 // const Recruiter = require('../models/Recruiter')
-const RecruiterJob = require('../models/RecruiterJob')
+const Recruiter = require('../models/Recruiter')
 const crypto = require('crypto')
 
 // FOR ROOT '/' ENDPOINT
@@ -33,7 +33,7 @@ const getRecruiters = async(req, res, next) => {
     }
 
     try {
-        const recruiters = await RecruiterJob.find({}, filter, options);
+        const recruiters = await Recruiter.find({}, filter, options);
 
         res
         .status(200)
@@ -49,7 +49,7 @@ const postRecruiter = async(req, res, next) => {
 
     try {
 
-        const recruiter = await RecruiterJob.create(req.body);
+        const recruiter = await Recruiter.create(req.body);
 
         sendTokenResponse(recruiter, 201, res)
         
@@ -62,7 +62,7 @@ const postRecruiter = async(req, res, next) => {
 const deleteRecruiters = async(req, res, next) => {
     
     try {
-        await RecruiterJob.deleteMany();
+        await Recruiter.deleteMany();
 
         res
         .status(200)
@@ -80,7 +80,7 @@ const deleteRecruiters = async(req, res, next) => {
 const getRecruiter = async (req, res, next) => {
 
     try {
-        const recruiter = await RecruiterJob.findById(req.params.recruiterId);
+        const recruiter = await Recruiter.findById(req.params.recruiterId);
 
         res
         .status(200)
@@ -96,7 +96,7 @@ const getRecruiter = async (req, res, next) => {
 const updateRecruiter = async (req, res, next) => {
 
     try {
-        const recruiter = await RecruiterJob.findByIdAndUpdate(
+        const recruiter = await Recruiter.findByIdAndUpdate(
             req.params.recruiterId, 
             {$set: req.body}, 
             {new: true}
@@ -116,7 +116,7 @@ const updateRecruiter = async (req, res, next) => {
 const deleteRecruiter = async (req, res, next) => {
 
     try {
-        await RecruiterJob.findByIdAndDelete(req.params.recruiterId)
+        await Recruiter.findByIdAndDelete(req.params.recruiterId)
 
         res
         .status(200)
@@ -140,7 +140,7 @@ const login = async (req, res, next) => {
 
     if (!email || !password) throw new Error('Please input your email and password')
 
-    const recruiter = await RecruiterJob.findOne({email}).select('+password')
+    const recruiter = await Recruiter.findOne({email}).select('+password')
 
     if(!recruiter) throw new Error('Invalid credentials')
 
@@ -154,7 +154,8 @@ const login = async (req, res, next) => {
 // FOR '/forgotPassword' ENDPOINT
 
 const forgotPassword = async (req, res, next) => {
-    const recruiter = await RecruiterJob.findOne({ email: req.body.email })
+
+    const recruiter = await Recruiter.findOne({ email: req.body.email })
 
     if(!recruiter) throw new Error('Recruiter not found!!')
 
@@ -186,7 +187,7 @@ const forgotPassword = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
     const resetPasswordToken = crypto.createHash('sha256').update(req.query.resetToken).digest('hex');
 
-    const recruiter = await RecruiterJob.findOne({
+    const recruiter = await Recruiter.findOne({
         resetPasswordToken,
         resetPasswordExpire: { $gt: Date.now() }
     })
@@ -209,7 +210,7 @@ const updatePassword = async (req, res, next) => {
         email
     } = req.body
 
-    const recruiter = await RecruiterJob.findOne({email}).select('+password')
+    const recruiter = await Recruiter.findOne({email}).select('+password')
 
     const passwordMatches = await recruiter.matchPassword(req.body.password)
 

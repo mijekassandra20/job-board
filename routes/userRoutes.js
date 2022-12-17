@@ -21,11 +21,14 @@ const {
     resetPassword,
     updatePassword,
     logout,
-    searchJobs
+    searchJobs,
+    applyJob,
+    getAppliedJobs,
+    deleteJobApplication
 
 } = require('../controllers/userController')
 
-// root
+// ----------------------------- USER 
 router.route('/')
     .get(reqLogger, protectedRoute, adminValidator, getUsers)
     .post(reqLogger, userValidator, postUser)
@@ -53,10 +56,14 @@ router.route('/:userId')
     .delete(reqLogger, protectedRoute, deleteUser)
 
 
-// ----------------------------------------------
+// ----------------------------- APPLY JOB
+
 router.route('/:userId/apply')
     .get(reqLogger, searchJobs)
-    // .post(reqLogger)
-    // .delete(reqLogger)
+    .post(reqLogger, applyJob)
+
+router.route('/:userId/applied-jobs')
+    .get(reqLogger, getAppliedJobs)
+    .delete(reqLogger, deleteJobApplication)
 
 module.exports = router

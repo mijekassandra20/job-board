@@ -1,5 +1,5 @@
 const User = require('../models/User')
-const RecruiterJob = require('../models/RecruiterJob')
+const Recruiter = require('../models/Recruiter')
 const jwt = require('jsonwebtoken')
 
 const protectedRoute = async (req, res, next) => {
@@ -19,10 +19,10 @@ const protectedRoute = async (req, res, next) => {
         
         // fetch for the user, and add a user object to the req object!
         req.user = await User.findById(decoded.id)
-        req.recruiter = await RecruiterJob.findById(decoded.id)
+        req.recruiter = await Recruiter.findById(decoded.id)
         
-        // if(req.user) req.user = await RecruiterJob.findById(decoded.id)
-        // if(req.recruiter) req.recruiter = await RecruiterJob.findById(decoded.id)
+        // if(req.user) req.user = await User.findById(decoded.id)
+        // if(req.recruiter) req.recruiter = await Recruiter.findById(decoded.id)
 
         next();
 
