@@ -146,12 +146,38 @@ const deleteJob = async (req, res, next) => {
     
 }
 
+const getApplicants = async (req,res, next) => {
+
+    try {
+        
+        const findJob = await Job.findById(req.params.jobId).populate('applicants', ['userName','firstName','lastName','email'])
+        const result = findJob.applicants
+
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json(result)
+
+
+    } catch (err) {
+        throw new Error(`Error retrieving applicants of jobs: ${req.params.jobId}: ${err.message}`)
+    }
+}
+
+const sendApplicantEmail = async (req, res, next) => {
+    try {
+        
+    } catch (err) {
+        throw new Error(`Error sending an email to Applicant`)
+    }
+}
+
 module.exports = {
     getJobs,
     postJob,
-    // deleteJobs,
     getRecruiterJobs,
     getJob,
     updateJob,
-    deleteJob
+    deleteJob,
+    getApplicants
 }

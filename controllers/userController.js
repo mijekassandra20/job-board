@@ -1,40 +1,15 @@
 const User = require('../models/User')
 const Job = require('../models/Job')
+const Recruiter = require('../models/Recruiter')
+
 const crypto = require('crypto');
+const nodemailer = require('nodemailer')
 
 // FOR ROOT '/' ENDPOINT
-
 const getUsers = async(req, res, next) => {
 
-    const filter = {}; // filters to returns only selected fields eg. userName, gender
-    const options = {}; // sorting, pagination , limit 20 data to come back, sorting by asc userName
-
-
-    if (Object.keys(req.query).length){
-        const { 
-            userName,
-            firstName,
-            lastName,
-            email,
-            gender,
-            limit, 
-            sortByFirstName 
-        } = req.query
-
-        if (userName) filter.userName = true
-        if (firstName) filter.firstName = true
-        if (lastName) filter.lastName = true
-        if (email) filter.email = true
-        if (gender) filter.gender = true
-        
-        if (limit) options.limit  = limit;
-        if (sortByFirstName) options.sort = {
-            user: sortByFirstName === 'asc'? 1 : -1
-        }     
-    }
-
     try {
-        const users = await User.find({}, filter, options);
+        const users = await User.find();
 
         res
         .status(200)
@@ -257,9 +232,30 @@ const sendTokenResponse = (user, statusCode, res) => {
 // SEARCH ALL JOBS POSTED
 const searchJobs = async (req, res, next) => {
 
-    try {
+    try {       
 
-        const jobs = await Job.find(); 
+        let jobs = await Job.find({isAvailable: true}).select(['-applicants']);
+
+        const {
+            sortJobTitle, sortByDate
+
+        } = req.query
+
+        const limit = req.query.limit
+        
+        if (sortJobTitle === '1'){
+            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({jobTitle: 1})
+
+        } else if (sortJobTitle === '-1' || sortByDate === '-1'){
+            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({jobTitle: -1})
+
+        } else if (sortByDate === '1'){
+            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({date: 1})
+
+        } else if (sortByDate === '-1'){
+            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({date: -1})
+
+        }
 
         res
         .status(200)
@@ -274,19 +270,68 @@ const searchJobs = async (req, res, next) => {
 // APPLY A JOB
 const applyJob = async (req, res, next) => {
 
+    const emailTransporter = nodemailer.createTransport({
+        service: 'outlook',
+        auth: {
+            user: 'crrcompass@outlook.com',
+            pass: 'compass@123'
+        }
+    });
+
     try {
 
-        const applicant = await User.findById(req.params.userId);
-        const apply = await Job.findById(req.query.jobId)
+        const applicant = await User.findById(req.params.userId)
+        const apply = await Job.findById(req.query.jobId).populate('postedBy', ['companyName', 'email'])
 
-        applicant.appliedJobs.push(apply)
+        let findJob  = applicant.appliedJobs.find(findJob => (findJob._id).equals(req.query.jobId));
 
-        const result = await applicant.save()
+        if(!findJob){
 
-        res
-        .status(201)
-        .setHeader('Content-Type', 'application/json')
-        .json(result)
+            apply.applicants.push(applicant)
+            applicant.appliedJobs.push(apply)
+
+            await apply.save()
+            await applicant.save()
+
+            const result = await User.findById(req.params.userId).populate('appliedJobs', ['jobTitle', 'jobDescription', 'requirements', 'location', 'salary', 'jobType'])
+            const recipientEmail = apply.postedBy
+
+            const toRecruiterEmail = {
+                from: 'crrcompass@outlook.com',
+                to: recipientEmail,
+                subject: 'New Job Application Received',
+                text: `Dear ${recipientEmail.companyName},
+
+                We are pleased to inform you that we have received a new job application for the ${apply.jobTitle} position.
+                
+                The applicant's information is as follows:
+                
+                Name: ${applicant.firstName} ${applicant.lastName}
+                Email: ${applicant.email}
+                Contact Number: ${applicant.contactNumber}
+                                                
+                Best regards,
+                ${'Career Compass'}
+                `
+            }
+
+            emailTransporter.sendMail(toRecruiterEmail, function(error, info){
+                if (error) {
+                    console.log(error);
+                  } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            })
+
+            res
+            .status(201)
+            .setHeader('Content-Type', 'application/json')
+            .json(result)
+
+        } else {
+            res
+            .json({success: false, msg: `You've already applied in this Job!!`})
+        }
 
 
     } catch (err) {
@@ -300,7 +345,7 @@ const getAppliedJobs = async (req, res, next) => {
 
     try {
 
-        const applicant = await User.findById(req.params.userId)
+        const applicant = await User.findById(req.params.userId).populate('appliedJobs', ['jobTitle', 'jobDescription', 'requirements', 'location', 'salary', 'jobType'])
         const result = applicant.appliedJobs
         
         res
@@ -318,8 +363,10 @@ const deleteJobApplication = async (req, res, next) => {
 
     try {
         const applicant = await User.findById(req.params.userId)
+        const job = await Job.findById(req.query.jobId)
 
         let findJob = applicant.appliedJobs.find(findJob => (findJob._id).equals(req.query.jobId));
+        let findApplicant = job.applicants.find(findApplicant => (findApplicant._id).equals(req.params.userId));
 
         if(!findJob){
             findJob = { success: false, msg: `No job application found with ID: ${req.query.jobId}`}
@@ -329,6 +376,10 @@ const deleteJobApplication = async (req, res, next) => {
             applicant.appliedJobs.splice(jobIndexPosition, 1)
             findJob = { success: true, msg: `Succesfully deleted job application with ID: ${req.query.jobId}`}
 
+            const applicantIndex = job.applicants.indexOf(findApplicant)
+            job.applicants.splice(applicantIndex, 1)
+
+            await job.save()
             await applicant.save()
         }
 

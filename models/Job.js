@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-
 const JobSchema = new Schema ({
     
     jobTitle: {
@@ -58,7 +57,12 @@ const JobSchema = new Schema ({
         type: Schema.Types.ObjectId,
         ref: 'Recruiter',
         required: true
-    }
+    },
+
+    applicants:[{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }]
 
 
 })

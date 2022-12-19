@@ -8,7 +8,8 @@ const userValidator = (req, res, next) => {
             !req.body.gender ||
             !req.body.age ||
             !req.body.email ||
-            !req.body.password 
+            !req.body.password ||
+            !req.body.contactNumber
         ) {
             res
             .status(400)

@@ -5,35 +5,8 @@ const crypto = require('crypto')
 // FOR ROOT '/' ENDPOINT
 const getRecruiters = async(req, res, next) => {
 
-    const filter = {}; // filters to returns only selected fields eg. userName, gender
-    const options = {}; // sorting, pagination , limit 20 data to come back, sorting by asc userName
-
-
-    if (Object.keys(req.query).length){
-        const { 
-            userName,
-            firstName,
-            lastName,
-            email,
-            gender,
-            limit, 
-            sortByFirstName 
-        } = req.query
-
-        if (userName) filter.userName = true
-        if (firstName) filter.firstName = true
-        if (lastName) filter.lastName = true
-        if (email) filter.email = true
-        if (gender) filter.gender = true
-        
-        if (limit) options.limit  = limit;
-        if (sortByFirstName) options.sort = {
-            user: sortByFirstName === 'asc'? 1 : -1
-        }     
-    }
-
     try {
-        const recruiters = await Recruiter.find({}, filter, options);
+        const recruiters = await Recruiter.find();
 
         res
         .status(200)

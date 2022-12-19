@@ -6,16 +6,16 @@ const bcrypt = require('bcryptjs')
 
 const Schema = mongoose.Schema;
 
-const ApplySchema = new Schema ({
-    jobs: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-    },
-    dateApplied: {
-        type: Date,
-        default: Date.now
-    }
-})
+// const ApplySchema = new Schema ({
+//     jobs: {
+//         type: Schema.Types.ObjectId,
+//         ref: 'Job'
+//     },
+//     dateApplied: {
+//         type: Date,
+//         default: Date.now
+//     }
+// })
 
 const UserSchema = new Schema ({
     userName: {
@@ -58,7 +58,15 @@ const UserSchema = new Schema ({
         }
     },
 
-    appliedJobs: [ApplySchema],
+    contactNumber: {
+        type: Number,
+        required: [true, 'Please input a your contact number!!']
+    },
+
+    appliedJobs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Job'
+    }],
 
     password: {
         type: String,
