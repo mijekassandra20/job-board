@@ -12,7 +12,6 @@ const {
 const {
     getUsers,
     postUser,
-    deleteUsers,
     getUser,
     updateUser,
     deleteUser,
@@ -29,10 +28,11 @@ const {
 } = require('../controllers/userController')
 
 // ----------------------------- USER 
+
+// ROOT ENDPOINTSS
 router.route('/')
-    .get(reqLogger, protectedRoute, adminValidator, getUsers)
+    .get(reqLogger, protectedRoute, getUsers)
     .post(reqLogger, userValidator, postUser)
-    .delete(reqLogger, protectedRoute, adminValidator, deleteUsers)
 
 router.route('/login')
     .post(reqLogger, login)
@@ -49,19 +49,20 @@ router.route('/updatepassword')
 router.route('/logout')
     .get(reqLogger, protectedRoute, logout)
 
-// /:userId
+// USER SPECIFIC ENDPOINT
 router.route('/:userId')
     .get(reqLogger, getUser)
     .put(reqLogger, protectedRoute, updateUser)
     .delete(reqLogger, protectedRoute, deleteUser)
 
-
 // ----------------------------- APPLY JOB
 
+// FETCH ALL THE AVAILABLE JOBS POSTED AND APPLY
 router.route('/:userId/apply')
     .get(reqLogger, searchJobs)
     .post(reqLogger, applyJob)
 
+// FETCH APPLIED JOBS AND CAN DELETE
 router.route('/:userId/applied-jobs')
     .get(reqLogger, getAppliedJobs)
     .delete(reqLogger, deleteJobApplication)

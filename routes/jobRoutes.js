@@ -17,7 +17,8 @@ const {
     getJob,
     updateJob,
     deleteJob,
-    getApplicants
+    getApplicants,
+    sendApplicantEmail
 } = require('../controllers/jobController')
 
 // GET ALL JOBS OF ALL RECRUITERS
@@ -37,6 +38,7 @@ router.route('/:recruiterId/jobposting/:jobId')
 
 // FOR RECRUITER ACCESS ONLY: RETRIEVE APPLICANTS OF A SPECIFIC JOB
 router.route('/:recruiterId/applicants/:jobId')
-    .get (reqLogger, getApplicants)
+    .get(reqLogger, getApplicants)
+    .post(reqLogger, sendApplicantEmail)
 
 module.exports = router;

@@ -12,7 +12,6 @@ const {
 const {
     getRecruiters,
     postRecruiter,
-    deleteRecruiters,
     getRecruiter,
     updateRecruiter,
     deleteRecruiter,
@@ -24,11 +23,10 @@ const {
 
 } = require('../controllers/recruiterController');
 
-// root
+// ROOT ENDPOINT
 router.route('/')
     .get(reqLogger, getRecruiters)
     .post(reqLogger, recruiterValidator, postRecruiter)
-    // .delete(reqLogger, protectedRoute, adminValidator, deleteRecruiters)
 
 router.route('/login')
     .post(reqLogger, login)
@@ -45,7 +43,7 @@ router.route('/updatepassword')
 router.route('/logout')
     .get(reqLogger, protectedRoute, logout)
 
-// /:recruiterId
+// RECRUITER SPECIFIC ENDPOINT
 router.route('/:recruiterId')
     .get(reqLogger, getRecruiter)
     .put(reqLogger, protectedRoute, updateRecruiter)

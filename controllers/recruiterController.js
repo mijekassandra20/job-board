@@ -32,22 +32,6 @@ const postRecruiter = async(req, res, next) => {
     
 }
 
-const deleteRecruiters = async(req, res, next) => {
-    
-    try {
-        await Recruiter.deleteMany();
-
-        res
-        .status(200)
-        .setHeader('Content-Type', 'application/json')
-        .json ({ success: true, msg: 'Successfully deleted all recruiters!!'})
-        
-    } catch (err) {
-        throw new Error(`Error deleting all recruiters: ${err.message}`)
-    }
-
-}
-
 // FOR '/:recruiterId' ENDPOINT
 
 const getRecruiter = async (req, res, next) => {
@@ -236,7 +220,6 @@ const sendTokenResponse = (recruiter, statusCode, res) => {
 module.exports = {
     getRecruiters,
     postRecruiter,
-    deleteRecruiters,
     getRecruiter,
     updateRecruiter,
     deleteRecruiter,

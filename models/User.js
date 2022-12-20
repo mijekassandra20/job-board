@@ -93,9 +93,6 @@ const UserSchema = new Schema ({
     timestamps: true
 })
 
-
-
-
 // bcrypt - pre hook the hashes the password before saving in the database
 UserSchema.pre('save', async function(next) {
 

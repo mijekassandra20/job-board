@@ -1,6 +1,5 @@
 const User = require('../models/User')
 const Job = require('../models/Job')
-const Recruiter = require('../models/Recruiter')
 
 const crypto = require('crypto');
 const nodemailer = require('nodemailer')
@@ -33,22 +32,6 @@ const postUser = async(req, res, next) => {
         throw new Error(`Error creating a new user: ${err.message}`)
     }
     
-}
-
-const deleteUsers = async(req, res, next) => {
-    
-    try {
-        await User.deleteMany();
-
-        res
-        .status(200)
-        .setHeader('Content-Type', 'application/json')
-        .json ({ success: true, msg: 'Successfully deleted all users!!'})
-        
-    } catch (err) {
-        throw new Error(`Error deleting all users: ${err.message}`)
-    }
-
 }
 
 // FOR '/:userId' ENDPOINT
@@ -232,30 +215,35 @@ const sendTokenResponse = (user, statusCode, res) => {
 // SEARCH ALL JOBS POSTED
 const searchJobs = async (req, res, next) => {
 
-    try {       
+    const filter = {};
+    const options = {};
 
-        let jobs = await Job.find({isAvailable: true}).select(['-applicants']);
+    if (Object.keys(req.query).length){
 
         const {
-            sortJobTitle, sortByDate
-
+            jobTitle,
+            date,
+            sortJobTitle, 
+            sortByDate,
+            limit
         } = req.query
 
-        const limit = req.query.limit
-        
-        if (sortJobTitle === '1'){
-            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({jobTitle: 1})
+        if (jobTitle) filter.jobTitle = true;
+        if (date) filter.date = true;
 
-        } else if (sortJobTitle === '-1' || sortByDate === '-1'){
-            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({jobTitle: -1})
-
-        } else if (sortByDate === '1'){
-            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({date: 1})
-
-        } else if (sortByDate === '-1'){
-            jobs = await Job.find({isAvailable: true}).select(['-applicants']).sort({date: -1})
-
+        if(limit) options.limit = limit;
+        if(sortJobTitle) options.sort = {
+            jobTitle: sortJobTitle === 'asc' ? 1 : -1
         }
+        if(sortByDate) options.sort = {
+            date: sortByDate === 'asc' ? 1 : -1
+        }
+        
+    }
+
+    try {       
+
+        let jobs = await Job.find({isAvailable: true}, filter, options).select(['-applicants']);
 
         res
         .status(200)
@@ -300,18 +288,21 @@ const applyJob = async (req, res, next) => {
                 from: 'crrcompass@outlook.com',
                 to: recipientEmail,
                 subject: 'New Job Application Received',
-                text: `Dear ${recipientEmail.companyName},
+                html: 
 
-                We are pleased to inform you that we have received a new job application for the ${apply.jobTitle} position.
+                ` <h2> Dear ${recipientEmail.companyName}, </h2>
+
+                <p> We are pleased to inform you that we have received a new job application for the ${apply.jobTitle} position. </p>
                 
-                The applicant's information is as follows:
+                </p> The applicant's information is as follows: </p>
                 
-                Name: ${applicant.firstName} ${applicant.lastName}
-                Email: ${applicant.email}
-                Contact Number: ${applicant.contactNumber}
+                <p> Name: ${applicant.firstName} ${applicant.lastName} <br>
+                Email: ${applicant.email} <br>
+                Contact Number: ${applicant.contactNumber} <br> </p>
                                                 
-                Best regards,
-                ${'Career Compass'}
+                Best regards, <br>
+                <b> ${'Career Compass'}
+
                 `
             }
 
@@ -354,7 +345,7 @@ const getAppliedJobs = async (req, res, next) => {
         .json(result)
         
     } catch (err) {
-        throw new Error(`Error retrieving all the Jobs applied`)
+        throw new Error(`Error retrieving all the Jobs applied: ${err.message}`)
     }
 }
 
@@ -398,7 +389,6 @@ const deleteJobApplication = async (req, res, next) => {
 module.exports = {
     getUsers,
     postUser,
-    deleteUsers,
     getUser,
     updateUser,
     deleteUser,

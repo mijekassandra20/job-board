@@ -65,7 +65,7 @@ RecruiterSchema.pre('save', async function(next) {
     this.password = await bcrypt.hash(this.password, salt) // resetPassword, create new pass, update pass
 })
 
-// retrieve the signed JWT token when user logs in OR creates new account!
+// retrieve the signed JWT token when recruiter logs in OR creates new account!
 RecruiterSchema.methods.getSignedJwtToken = function() {
     return jwt.sign( 
         {id: this._id}, 

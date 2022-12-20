@@ -1,7 +1,7 @@
 const Job = require('../models/Job');
 const Recruiter = require('../models/Recruiter')
 
-// This is a test
+const nodemailer = require('nodemailer')
 
 // GET ALL JOBS 
 const getJobs = async(req, res, next) => {
@@ -25,8 +25,6 @@ const postJob = async (req, res, next) => {
 
     try {
 
-        const recruiter = await Recruiter.findById(req.params.recruiterId)
-
         const job = await Job.create(req.body)
 
         res
@@ -38,31 +36,6 @@ const postJob = async (req, res, next) => {
         throw new Error(`Error posting new job: ${err.message}`)
     }
 }
-
-// const deleteJobs = async (req, res, next) => {
-
-//     try {
-
-//         const recruiters = await Recruiter.find(); 
-
-//         let jobs = recruiters.map(recruiter => recruiter.jobPosting).flat()
-
-//         jobs = []
-
-//         console.log(jobs)
-
-//         // await jobs.save()
-
-//         res
-//         .status(200)
-//         .setHeader('Content-Type', 'application/json')
-//         .json({ success: true, msg: 'Successfully deleted all jobs!'})
-
-//     } catch (err){
-//         throw new Error(`Error deleting all jobs: ${err.message}`)
-//     }
-// }
-
 
 // GET ALL JOBS UNDER A RECRUITER
 const getRecruiterJobs = async (req, res, next) => {
@@ -165,10 +138,53 @@ const getApplicants = async (req,res, next) => {
 }
 
 const sendApplicantEmail = async (req, res, next) => {
+
+    const emailTransporter = nodemailer.createTransport({
+        service: 'outlook',
+        auth: {
+            user: 'crrcompass@outlook.com',
+            pass: 'compass@123'
+        }
+    });
+
     try {
-        
+        const getJob = await Job.findById(req.params.jobId)
+        .populate('applicants', ['userName','firstName','lastName','email'])
+        .populate('postedBy', ['companyName', 'email'])
+
+        let findApplicant  = getJob.applicants.find(findApplicant => (findApplicant._id).equals(req.query.applicantId));
+
+        const toApplicantEmail = {
+            from: 'crrcompass@outlook.com',
+            to: findApplicant.email,
+            subject: 'Job Application Status',
+            html: 
+            `<h2> Dear ${findApplicant.firstName} ${findApplicant.lastName},</h2> 
+
+            <p> Thank you for submitting your application for the ${getJob.jobTitle} at ${getJob.postedBy.companyName}. We are pleased to inform you that your application has been reviewed and shortlisted by the ${getJob.postedBy.companyName} for further consideration.</p>
+
+            <p> The company is currently in the process of reviewing all of the applications received and will be in touch with you as soon as a decision has been made regarding your application. Please be patient as this process may take some time. </p>
+
+            </p> In the meantime, if you have any further questions or would like to follow up on the status of your application, you may reach out the Employer: </p>
+            
+            <p> Company Name: ${getJob.postedBy.companyName} <br>
+            Email: ${getJob.postedBy.email} </p>
+
+            <p> Good luck! </p>
+                                            
+            Best regards, <br>
+            <b> ${'Career Compass'}     
+            
+            `
+        }
+
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json(`Successfully sent an email to the applicant: ${findApplicant.firstName} ${findApplicant.lastName}`)
+
     } catch (err) {
-        throw new Error(`Error sending an email to Applicant`)
+        throw new Error(`Error sending an email to Applicant: ${err.message}`)
     }
 }
 
@@ -179,5 +195,6 @@ module.exports = {
     getJob,
     updateJob,
     deleteJob,
-    getApplicants
+    getApplicants,
+    sendApplicantEmail
 }
