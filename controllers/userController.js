@@ -2,7 +2,11 @@ const User = require('../models/User')
 const Job = require('../models/Job')
 
 const crypto = require('crypto');
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
+const fs = require('fs')
+const path = require('path');
+
+// const { Error } = require('mongoose');
 
 // FOR ROOT '/' ENDPOINT
 const getUsers = async(req, res, next) => {
@@ -284,6 +288,12 @@ const applyJob = async (req, res, next) => {
             const result = await User.findById(req.params.userId).populate('appliedJobs', ['jobTitle', 'jobDescription', 'requirements', 'location', 'salary', 'jobType'])
             const recipientEmail = apply.postedBy
 
+            // get the file path of the uploaded files
+            const filePath = process.env.FILE_UPLOAD_PATH
+
+            // read the uploaded files and search for the resume of the applicant
+            const readFile = fs.readdirSync(filePath).find(file => file === applicant.resume)
+
             const toRecruiterEmail = {
                 from: 'crrcompass@outlook.com',
                 to: recipientEmail,
@@ -294,16 +304,21 @@ const applyJob = async (req, res, next) => {
 
                 <p> We are pleased to inform you that we have received a new job application for the ${apply.jobTitle} position. </p>
                 
-                </p> The applicant's information is as follows: </p>
+                </p> The applicant's information is as follows : </p>
                 
                 <p> Name: ${applicant.firstName} ${applicant.lastName} <br>
                 Email: ${applicant.email} <br>
                 Contact Number: ${applicant.contactNumber} <br> </p>
+
+                <p> We have attached the applicant's resume for your review. </p>
                                                 
                 Best regards, <br>
                 <b> ${'Career Compass'}
+                `,
 
-                `
+                attachments: [{
+                    path: path.join(filePath, readFile)
+                }]
             }
 
             emailTransporter.sendMail(toRecruiterEmail, function(error, info){
@@ -385,6 +400,39 @@ const deleteJobApplication = async (req, res, next) => {
     }
 }
 
+const postResume = async(req, res, next) => {
+
+    if (!req.files) throw new Error('Missing file upload!')
+
+    const file = req.files.fileUpload
+
+    if (!file.mimetype.startsWith('application/pdf') &&
+        !file.mimetype.startsWith('application/msword') &&
+        !file.mimetype.startsWith('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        ){
+        throw new Error('Please upload a pdf/doc/docx file type!')
+    }
+
+    if (file.size > process.env.MAX_FILE_SIZE) throw new Error(`Image exceeds size of ${process.env.MAX_FILE_SIZE}`);
+
+    file.name = `CV_${file.name}`
+
+    const filePath = process.env.FILE_UPLOAD_PATH + file.name
+
+    file.mv((filePath), async (err) => {
+        if (err) throw new Error('Problem uploading file!');
+
+        // upload the new file with the value being the file.name
+        await User.findByIdAndUpdate(req.params.userId, { resume: file.name})
+
+        res
+        .status(200)
+        .setHeader('Content-Type', 'application/json')
+        .json({ success: true, data: file.name})
+    })
+
+
+}
 
 module.exports = {
     getUsers,
@@ -400,5 +448,6 @@ module.exports = {
     searchJobs,
     applyJob,
     getAppliedJobs,
-    deleteJobApplication
+    deleteJobApplication,
+    postResume
 }

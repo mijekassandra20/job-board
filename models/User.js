@@ -65,6 +65,10 @@ const UserSchema = new Schema ({
         }
     },
 
+    resume: {
+        type: String
+    },
+
     resetPasswordToken: {
         type: String
     },

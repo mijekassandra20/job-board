@@ -23,7 +23,8 @@ const {
     searchJobs,
     applyJob,
     getAppliedJobs,
-    deleteJobApplication
+    deleteJobApplication,
+    postResume
 
 } = require('../controllers/userController')
 
@@ -66,5 +67,9 @@ router.route('/:userId/apply')
 router.route('/:userId/applied-jobs')
     .get(reqLogger, protectedRoute, getAppliedJobs)
     .delete(reqLogger, protectedRoute, deleteJobApplication)
+
+// UPLOAD CV
+router.route('/:userId/upload')
+    .post(reqLogger, protectedRoute, postResume)
 
 module.exports = router

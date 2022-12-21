@@ -123,7 +123,7 @@ const getApplicants = async (req,res, next) => {
 
     try {
         
-        const findJob = await Job.findById(req.params.jobId).populate('applicants', ['userName','firstName','lastName','email'])
+        const findJob = await Job.findById(req.params.jobId).populate('applicants', ['userName','firstName','lastName','email', 'resume'])
         const result = findJob.applicants
 
         res
