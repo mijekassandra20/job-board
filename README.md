@@ -35,7 +35,7 @@ To try out this project:
 
 ## Features
 
-### Code Example
+### Code Example: Node.js/Express.js
 <img width="1001" alt="Screen Shot 2022-12-21 at 4 10 29 PM" src="https://user-images.githubusercontent.com/115439406/208853310-40043fec-86e1-45a0-af06-fb5164452573.png">
 
 - Allows both applicant and recruiter to create account.
