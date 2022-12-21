@@ -31,7 +31,7 @@ const {
 
 // ROOT ENDPOINTSS
 router.route('/')
-    .get(reqLogger, protectedRoute, getUsers)
+    .get(reqLogger, getUsers)
     .post(reqLogger, userValidator, postUser)
 
 router.route('/login')
@@ -59,12 +59,12 @@ router.route('/:userId')
 
 // FETCH ALL THE AVAILABLE JOBS POSTED AND APPLY
 router.route('/:userId/apply')
-    .get(reqLogger, searchJobs)
-    .post(reqLogger, applyJob)
+    .get(reqLogger, protectedRoute, searchJobs)
+    .post(reqLogger, protectedRoute, applyJob)
 
 // FETCH APPLIED JOBS AND CAN DELETE
 router.route('/:userId/applied-jobs')
-    .get(reqLogger, getAppliedJobs)
-    .delete(reqLogger, deleteJobApplication)
+    .get(reqLogger, protectedRoute, getAppliedJobs)
+    .delete(reqLogger, protectedRoute, deleteJobApplication)
 
 module.exports = router

@@ -178,6 +178,14 @@ const sendApplicantEmail = async (req, res, next) => {
             `
         }
 
+        emailTransporter.sendMail(toApplicantEmail, function(error, info){
+            if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+            }
+        })
+
         res
         .status(200)
         .setHeader('Content-Type', 'application/json')

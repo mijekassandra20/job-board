@@ -315,7 +315,7 @@ const applyJob = async (req, res, next) => {
             })
 
             res
-            .status(201)
+            .status(200)
             .setHeader('Content-Type', 'application/json')
             .json(result)
 
