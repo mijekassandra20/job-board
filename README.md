@@ -30,8 +30,7 @@ To try out this project:
 1. Clone the GitHub repository locally to your computer
 2. In the command line, navigate to the root directory of the repository, and type the following: $ npm install
 3. Navigate to the client folder, and in the root directory of the client folder, type the following: $ npm install
-4. In the client folder, and in the root directory of the client folder, type the following: $ npm start
-5. Navigate back to the root directory of this project "/GitConnect" and start the server by typing the following: $ npm nodemon server
+4. In the client folder, and in the root directory of the client folder, type the following: $ npm run dev
 
 ## Features
 
