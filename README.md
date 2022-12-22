@@ -52,6 +52,7 @@ Project is: finished with option to expand functionality and DRY out code.
 - Application tracking: A feature that allows both applicants and recruiters to track the status of job applications. This could include the ability to mark an application as "pending," "rejected," or "hired,".
 - Communication tools: A feature that allows applicants and recruiters to communicate with each other through the app, such as by sending messages or scheduling interviews.
 - Enhanced search functionality: A job board app could potentially include more advanced search features, such as the ability to search for jobs based on specific skills or experience levels, or the ability to search within job descriptions for specific keywords.
+- AWS S3 Bucket Integration: Use cloud storage to store the uploaded files instead of storing it in the server.
 
 ## Inspiration
 I was inspired to create this job board because I saw a need for a more user-friendly and effective platform for job seekers and recruiters to connect, and I wanted to help people find the job opportunities that are right for them.
