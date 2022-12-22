@@ -34,7 +34,9 @@ To try out this project:
 ## Features
 
 ### Code Example: Node.js/Express.js
-<img width="1001" alt="Screen Shot 2022-12-21 at 4 10 29 PM" src="https://user-images.githubusercontent.com/115439406/208853310-40043fec-86e1-45a0-af06-fb5164452573.png">
+
+![Screen Shot 2022-12-22 at 2 09 50 PM](https://user-images.githubusercontent.com/115439406/209068779-7c4fb168-855b-4f09-900b-eee7b872c521.png)
+
 
 - Allows both applicant and recruiter to create account.
 - Recruiters can create and publish job listings on the job board, providing details about the position and requirements.
