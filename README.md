@@ -40,10 +40,10 @@ To try out this project:
 
 - Allows both applicant and recruiter to create account.
 - Recruiters can create and publish job listings on the job board, providing details about the position and requirements.
-- Job seekers can search for jobs posted.
+- Job seekers can search for jobs posted and apply for that job.
 - Job seekers can upload their resumes that is submitted along with the email that is sent to the recruiter.
 - An email is sent to an employer to notify that an applicant applied for a job they posted.
-- An email is also sent to an applicant to notify that an employer has reviewed their application.
+- An email is also sent to an applicant to notify that an employer has reviewed and picked their application.
 
 ## Status
 Project is: finished with option to expand functionality and DRY out code.
