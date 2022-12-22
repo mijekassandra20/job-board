@@ -9,7 +9,6 @@ Job board web application.
 - [Future Development](#future-development)
 - [Inspiration](#inspiration)
 - [Contact](#contact)
-- [License](#license)
 
 ## General Info
 Career Compass is a backend web application that allows that allows recruiters to post jobs to share with potential job candidates seeking opportunities in the industry. 
@@ -59,5 +58,3 @@ I was inspired to create this job board because I saw a need for a more user-fri
 Created by [Kassandra Mije][1] Feel free to contact me for any questions!
 
 [1]:https://www.linkedin.com/in/kassandra-mije-394397249/
-
-## License
