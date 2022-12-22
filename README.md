@@ -11,7 +11,7 @@ Job board web application.
 - [Contact](#contact)
 
 ## General Info
-Career Compass is a backend web application that allows that allows recruiters to post jobs to share with potential job candidates seeking opportunities in the industry. 
+Career Compass is a backend web application that allows recruiters to post jobs to share with potential job candidates seeking opportunities in the industry. 
 It also allows applicants to apply for a job that is posted by the recruiters. The platform is user-friendly and designed to make the job search process efficient and convenient.
 
 ## Technologies
