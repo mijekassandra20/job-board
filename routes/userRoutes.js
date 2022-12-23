@@ -52,7 +52,7 @@ router.route('/logout')
 
 // USER SPECIFIC ENDPOINT
 router.route('/:userId')
-    .get(reqLogger, getUser)
+    .get(reqLogger, protectedRoute, getUser)
     .put(reqLogger, protectedRoute, updateUser)
     .delete(reqLogger, protectedRoute, deleteUser)
 

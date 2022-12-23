@@ -45,7 +45,7 @@ router.route('/logout')
 
 // RECRUITER SPECIFIC ENDPOINT
 router.route('/:recruiterId')
-    .get(reqLogger, getRecruiter)
+    .get(reqLogger, protectedRoute, getRecruiter)
     .put(reqLogger, protectedRoute, updateRecruiter)
     .delete(reqLogger, protectedRoute, deleteRecruiter)
 

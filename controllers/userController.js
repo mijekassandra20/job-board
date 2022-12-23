@@ -413,7 +413,7 @@ const postResume = async(req, res, next) => {
         throw new Error('Please upload a pdf/doc/docx file type!')
     }
 
-    if (file.size > process.env.MAX_FILE_SIZE) throw new Error(`Image exceeds size of ${process.env.MAX_FILE_SIZE}`);
+    if (file.size > process.env.MAX_FILE_SIZE) throw new Error(`File size exceeds size of ${process.env.MAX_FILE_SIZE}`);
 
     file.name = `CV_${file.name}`
 
