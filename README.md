@@ -5,6 +5,7 @@ Job board web application.
 - [General Info](#general-info)
 - [Technologies](#technologies)
 - [Setup](#setup)
+- [Project Video](#project-video)
 - [Features](#features)
 - [Future Development](#future-development)
 - [Inspiration](#inspiration)
@@ -30,6 +31,10 @@ To try out this project:
 2. In the command line, navigate to the root directory of the repository, and type the following: $ npm install
 3. Navigate to the client folder, and in the root directory of the client folder, type the following: $ npm install
 4. In the client folder, and in the root directory of the client folder, type the following: $ npm run dev
+
+## Project Video
+
+https://drive.google.com/file/d/17a3eGtu8DUPXWrUpR26Yz7cyMx-2LUFI/view
 
 ## Features
 
